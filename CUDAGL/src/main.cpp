@@ -1,5 +1,6 @@
 #include <GLFW/glfw3.h>
-#include "test.h"
+
+#include "program.hpp"
 
 int main(void)
 {
@@ -10,7 +11,7 @@ int main(void)
 		return -1;
 
 	/* Create a windowed mode window and its OpenGL context */
-	window = glfwCreateWindow(640, 480, "Hello World", NULL, NULL);
+	window = glfwCreateWindow(WIDTH, HEIGHT, "Hello World", NULL, NULL);
 	if (!window)
 	{
 		glfwTerminate();
@@ -20,7 +21,12 @@ int main(void)
 	/* Make the window's context current */
 	glfwMakeContextCurrent(window);
 
-	test();
+	onInit(window, WIDTH, HEIGHT);
+
+	glfwSetWindowSizeCallback(window, onResize);
+	glfwSetKeyCallback(window, onKey);
+	glfwSetCursorPosCallback(window, onMouseMove);
+	glfwSetMouseButtonCallback(window, onMouseButton);
 
 	/* Loop until the user closes the window */
 	while (!glfwWindowShouldClose(window))
@@ -28,11 +34,7 @@ int main(void)
 		/* Render here */
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		glBegin(GL_TRIANGLES);
-		glVertex2f(0, 0);
-		glVertex2f(1, 0);
-		glVertex2f(1, 1);
-		glEnd();
+		onLoop();
 
 		/* Swap front and back buffers */
 		glfwSwapBuffers(window);
@@ -40,6 +42,8 @@ int main(void)
 		/* Poll for and process events */
 		glfwPollEvents();
 	}
+
+	onClose(window);
 
 	glfwTerminate();
 	return 0;

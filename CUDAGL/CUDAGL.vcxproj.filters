@@ -2,11 +2,12 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\julia.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <CudaCompile Include="src\hello_cuda.cu" />
+    <CudaCompile Include="src\julia_set.cu" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\test.h" />
+    <ClInclude Include="src\program.hpp" />
   </ItemGroup>
 </Project>
