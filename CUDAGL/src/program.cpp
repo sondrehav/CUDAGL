@@ -1,6 +1,5 @@
 
 #include <GLEW/glew.h>
-#include <GLFW/glfw3.h>
 
 #include "program.hpp"
 #include <cuda_runtime.h>
@@ -10,6 +9,8 @@
 
 GLFWwindow* Program::s_window = NULL;
 Program* Program::s_active = NULL;
+double Program::m_frameTime = 0.0;
+double Program::m_titleSet = 1.0;
 
 void Program::start(int argc, char** argv)
 {
@@ -17,12 +18,14 @@ void Program::start(int argc, char** argv)
 	assert(s_active == NULL);
 	assert(initializeGLFW());
 	s_active = this;
+	m_titleSet = 1.0;
 
 	this->onInit(WIDTH, HEIGHT, argc, argv);
 
 	/* Loop until the user closes the window */
 	while (!glfwWindowShouldClose(s_window))
 	{
+		double time = glfwGetTime();
 		/* Render here */
 		this->onLoop();
 		/* Swap front and back buffers */
@@ -30,6 +33,15 @@ void Program::start(int argc, char** argv)
 
 		/* Poll for and process events */
 		glfwPollEvents();
+		m_frameTime = glfwGetTime() - time;
+		m_titleSet -= m_frameTime;
+		if(m_titleSet < 0.0)
+		{
+			static char title[32];
+			sprintf(title, "%3.1f fps", 1.0 / m_frameTime);
+			glfwSetWindowTitle(s_window, title);
+			m_titleSet = 1.0;
+		}
 	}
 
 	this->onClose();
