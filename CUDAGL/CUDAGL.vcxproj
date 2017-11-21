@@ -90,14 +90,15 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(SolutionDir)dependencies\glfw\include;$(CudaToolkitIncludeDir)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)dependencies\glfw\include;$(SolutionDir)dependencies\glew\include;$(CudaToolkitIncludeDir);$(SolutionDir)inc</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>GLEW_STATIC;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>$(SolutionDir)dependencies\glfw\lib-vc2015;$(CudaToolkitLibDir)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>glfw3.lib;opengl32.lib;User32.lib;Gdi32.lib;Shell32.lib;cudart.lib;</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)dependencies\glew\lib\Win32;$(SolutionDir)dependencies\glfw\lib-vc2015;$(CudaToolkitLibDir)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>glew32s.lib;glfw3.lib;opengl32.lib;User32.lib;Gdi32.lib;Shell32.lib;cudart.lib;</AdditionalDependencies>
     </Link>
     <CudaCompile>
-      <Include>$(CudaToolkitIncludeDir)</Include>
+      <Include>$(CudaToolkitIncludeDir);$(SolutionDir)inc</Include>
     </CudaCompile>
     <CudaLink>
       <AdditionalDependencies>
@@ -109,14 +110,15 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(SolutionDir)dependencies\glfw\include;$(CudaToolkitIncludeDir)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)dependencies\glfw\include;$(SolutionDir)dependencies\glew\include;$(CudaToolkitIncludeDir);$(SolutionDir)inc</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>GLEW_STATIC;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>$(SolutionDir)dependencies\glfw\lib-vc2015;$(CudaToolkitLibDir)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>glfw3.lib;opengl32.lib;User32.lib;Gdi32.lib;Shell32.lib;cudart.lib;</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)dependencies\glew\lib\x64;$(SolutionDir)dependencies\glfw\lib-vc2015;$(CudaToolkitLibDir)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>glew32s.lib;glfw3.lib;opengl32.lib;User32.lib;Gdi32.lib;Shell32.lib;cudart.lib;</AdditionalDependencies>
     </Link>
     <CudaCompile>
-      <Include>$(CudaToolkitIncludeDir)</Include>
+      <Include>$(CudaToolkitIncludeDir);$(SolutionDir)inc</Include>
     </CudaCompile>
     <CudaLink>
       <AdditionalDependencies>
@@ -130,16 +132,17 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(SolutionDir)dependencies\glfw\include;$(CudaToolkitIncludeDir)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)dependencies\glfw\include;$(SolutionDir)dependencies\glew\include;$(CudaToolkitIncludeDir);$(SolutionDir)inc</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>GLEW_STATIC;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>$(SolutionDir)dependencies\glfw\lib-vc2015;$(CudaToolkitLibDir)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>glfw3.lib;opengl32.lib;User32.lib;Gdi32.lib;Shell32.lib;cudart.lib;</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)dependencies\glew\lib\Win32;$(SolutionDir)dependencies\glfw\lib-vc2015;$(CudaToolkitLibDir)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>glew32s.lib;glfw3.lib;opengl32.lib;User32.lib;Gdi32.lib;Shell32.lib;cudart.lib;</AdditionalDependencies>
     </Link>
     <CudaCompile>
-      <Include>$(CudaToolkitIncludeDir)</Include>
+      <Include>$(CudaToolkitIncludeDir);$(SolutionDir)inc</Include>
     </CudaCompile>
     <CudaLink>
       <AdditionalDependencies>
@@ -153,16 +156,17 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(SolutionDir)dependencies\glfw\include;$(CudaToolkitIncludeDir)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)dependencies\glfw\include;$(SolutionDir)dependencies\glew\include;$(CudaToolkitIncludeDir);$(SolutionDir)inc</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>GLEW_STATIC;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>$(SolutionDir)dependencies\glfw\lib-vc2015;$(CudaToolkitLibDir)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>glfw3.lib;opengl32.lib;User32.lib;Gdi32.lib;Shell32.lib;cudart.lib;</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)dependencies\glew\lib\x64;$(SolutionDir)dependencies\glfw\lib-vc2015;$(CudaToolkitLibDir)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>glew32s.lib;glfw3.lib;opengl32.lib;User32.lib;Gdi32.lib;Shell32.lib;cudart.lib;</AdditionalDependencies>
     </Link>
     <CudaCompile>
-      <Include>$(CudaToolkitIncludeDir)</Include>
+      <Include>$(CudaToolkitIncludeDir);$(SolutionDir)inc</Include>
     </CudaCompile>
     <CudaLink>
       <AdditionalDependencies>
@@ -171,12 +175,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\julia.cpp" />
-    <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\program.cpp" />
   </ItemGroup>
   <ItemGroup>
     <CudaCompile Include="src\julia_set.cu" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\julia.hpp" />
     <ClInclude Include="src\program.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
