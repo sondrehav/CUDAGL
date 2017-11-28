@@ -4,6 +4,7 @@
 #include <cuda_gl_interop.h>
 #include <cassert>
 #include "file.h"
+#include <random>
 
 int main(int argc, char** argv)
 {
@@ -36,6 +37,8 @@ void NBody::onInit(int width, int height, int argc, char** argv)
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Body), (void*)offsetof(Body, vx));
 	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, sizeof(Body), (void*)offsetof(Body, mass));
+	glEnableVertexAttribArray(2);
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
@@ -54,6 +57,7 @@ void NBody::onInit(int width, int height, int argc, char** argv)
 	glViewport(0, 0, width, height);
 
 	glBindVertexArray(m_vao);
+	glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
 
 	this->reset();
 
@@ -71,12 +75,16 @@ void NBody::reset()
 	// initialize buffer object
 	Body array[N];
 	
+	std::random_device rd;
+	std::mt19937 e2(rd());
+	std::normal_distribution<> dist(0.0, 5.0);
+	
 	for (int i = 0; i < N; i++)
 	{
-		array[i].x = cos(random() * 3.14159 * 2) * 10.0 * random();
-		array[i].y = sin(random() * 3.14159 * 2) * 10.0 * random();
-		array[i].vx = random() * 2.0 - 1.0;
-		array[i].vy = random() * 2.0 - 1.0;
+		array[i].x = dist(e2);
+		array[i].y = dist(e2);
+		array[i].vx = random() * .2 - .1;
+		array[i].vy = random() * .2 - .1;
 		array[i].mass = random() * random() * random() * 10.0 + 1.0;
 	}
 	
@@ -133,12 +141,12 @@ void NBody::onKey(int key, int scancode, int action, int mods)
 	{
 		this->reset();
 	}
-	if (key == GLFW_KEY_KP_ADD && action == GLFW_PRESS)
+	if (key == GLFW_KEY_KP_ADD)
 	{
 		m_zoom *= 0.9;
 		this->setZoom();
 	}
-	if (key == GLFW_KEY_KP_SUBTRACT && action == GLFW_PRESS)
+	if (key == GLFW_KEY_KP_SUBTRACT)
 	{
 		m_zoom /= 0.9;
 		this->setZoom();
@@ -164,7 +172,6 @@ void NBody::setZoom()
 
 void NBody::useQuickDrawShader()
 {
-	glPointSize(4.0f);
 	glDisable(GL_BLEND);
 	glDisable(GL_POINT_SPRITE);
 	glUseProgram(this->m_quickDrawShader->getProgramID());
@@ -172,7 +179,6 @@ void NBody::useQuickDrawShader()
 
 void NBody::useStandardShader()
 {
-	glPointSize(64.0f);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_POINT_SPRITE);

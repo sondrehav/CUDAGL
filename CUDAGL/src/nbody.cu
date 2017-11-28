@@ -11,7 +11,7 @@
 #define HANDLE_ERROR(x) \
 	if(x != cudaSuccess) {\
 		fprintf(stderr, "CUDA failed at line %d in file %s!\n", __LINE__, __FILE__);\
-		fprintf(stderr, "Error: '%s\n'", _cudaGetErrorEnum(x));\
+		fprintf(stderr, "Error: '%d\n'", _cudaGetErrorEnum(x));\
 		system("pause"); \
 		exit(-1);\
 	}\
@@ -19,10 +19,10 @@
 __global__ void collision(Body *pnt, double deltaTime)
 {
 	int thread_id = blockIdx.x * blockDim.x + threadIdx.x;
-	Body* a = thread_id + pnt;
 	
-	if (thread_id < N)
+	while (thread_id < N)
 	{
+		Body* a = thread_id + pnt;
 		
 		for(int i = thread_id + 1; i < N; i++)
 		{
@@ -69,16 +69,17 @@ __global__ void collision(Body *pnt, double deltaTime)
 				float new_b_d_x = pn_x * a_m;
 				float new_b_d_y = pn_y * a_m;
 
-				a->vx += new_a_d_x;
-				a->vy += new_a_d_y;
+				a->vx += new_a_d_x * deltaTime;
+				a->vy += new_a_d_y * deltaTime;
 
-				b->vx += new_b_d_x;
-				b->vy += new_b_d_y;
+				b->vx += new_b_d_x * deltaTime;
+				b->vy += new_b_d_y * deltaTime;
 
 			}
 
 
 		}
+		thread_id += blockDim.x;
 	}
 }
 
@@ -87,13 +88,14 @@ __global__ void gravity(Body *pnt, double deltaTime)
 	
 	int thread_id = blockIdx.x * blockDim.x + threadIdx.x;
 
-	Body* a = thread_id + pnt;
-	
-	float dx = 0.0;
-	float dy = 0.0;
-
-	if (thread_id < N)
+	while (thread_id < N)
 	{
+
+		Body* a = thread_id + pnt;
+
+		float dx = 0.0;
+		float dy = 0.0;
+
 		for (int i = 0; i < N; i++)
 		{
 			if (i == thread_id) continue;
@@ -122,19 +124,21 @@ __global__ void gravity(Body *pnt, double deltaTime)
 		}
 		a->vx += dx;
 		a->vy += dy;
+		thread_id += blockDim.x;
 	}
 }
 
 __global__ void updatePosition(Body *a, double deltaTime)
 {
-	int thread_id = blockIdx.x;
-	if (thread_id < N)
+	int thread_id = blockIdx.x * blockDim.x + threadIdx.x;
+	while (thread_id < N)
 	{
 		Body* b = a + thread_id;
 		b->x += b->vx * deltaTime;
 		b->y += b->vy * deltaTime;
 		b->vx *= DAMPING;
 		b->vy *= DAMPING;
+		thread_id += blockDim.x;
 	}
 }
 

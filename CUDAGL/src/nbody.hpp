@@ -5,12 +5,13 @@
 #include "shader.h"
 
 #define N 2048
-#define BLOCK_SIZE N
 #define THREAD_SIZE 1024
+#define BLOCK_SIZE N / THREAD_SIZE
 
-#define G 0.001
-#define DAMPING 0.99
+#define G 0.01
+#define DAMPING 0.95
 #define RADIUS 0.1
+#define MASS_DIST(x) (x * x * x * x * x * 50.0 + 1.0)
 
 struct Body
 {
