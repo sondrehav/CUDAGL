@@ -5,6 +5,7 @@
 #include <cassert>
 #include "file.h"
 #include <random>
+#include "error_check.h"
 
 int main(int argc, char** argv)
 {
@@ -17,34 +18,27 @@ NBody::~NBody(){}
 void NBody::onInit(int width, int height, int argc, char** argv)
 {
 
-	printf("size: %zu\n", sizeof(Body));
-	glGenVertexArrays(1, &m_vao);
-	glBindVertexArray(m_vao);
+	HANDLE_GL_ERROR(glGenVertexArrays(1, &m_vao));
+	HANDLE_GL_ERROR(glBindVertexArray(m_vao));
+	
+	HANDLE_GL_ERROR(glGenBuffers(1, &m_vbo));
 
-	glGenBuffers(1, &m_vbo);
+	HANDLE_GL_ERROR(glBindBuffer(GL_ARRAY_BUFFER, m_vbo));
 
-	GLenum err = glGetError();
-	if(err != GL_NO_ERROR)
-	{
-		printf("GL Error: %d\n", err);
-	}
+	HANDLE_GL_ERROR(glBufferData(GL_ARRAY_BUFFER, sizeof(Body) * N, NULL, GL_DYNAMIC_DRAW));
 
-	glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
+	HANDLE_GL_ERROR(glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(Body), (void*)offsetof(Body, x)));
+	HANDLE_GL_ERROR(glEnableVertexAttribArray(0));
+	HANDLE_GL_ERROR(glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Body), (void*)offsetof(Body, vx)));
+	HANDLE_GL_ERROR(glEnableVertexAttribArray(1));
+	HANDLE_GL_ERROR(glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, sizeof(Body), (void*)offsetof(Body, mass)));
+	HANDLE_GL_ERROR(glEnableVertexAttribArray(2));
 
-	glBufferData(GL_ARRAY_BUFFER, sizeof(Body) * N, NULL, GL_DYNAMIC_DRAW);
-
-	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(Body), (void*)offsetof(Body, x));
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Body), (void*)offsetof(Body, vx));
-	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, sizeof(Body), (void*)offsetof(Body, mass));
-	glEnableVertexAttribArray(2);
-
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindVertexArray(0);
+	HANDLE_GL_ERROR(glBindBuffer(GL_ARRAY_BUFFER, 0));
+	HANDLE_GL_ERROR(glBindVertexArray(0));
 
 	// register this buffer object with CUDA
-	checkCudaErrors(cudaGraphicsGLRegisterBuffer(&m_cudaVBOResource, m_vbo, cudaGraphicsMapFlagsNone));
+	HANDLE_CUDA_ERROR(cudaGraphicsGLRegisterBuffer(&m_cudaVBOResource, m_vbo, cudaGraphicsMapFlagsNone));
 
 	m_shader = new Shader(readFile("shaders/smooth_shader.vs"), readFile("shaders/smooth_shader.fs"));
 	m_quickDrawShader = new Shader(readFile("shaders/quick_shader.vs"), readFile("shaders/quick_shader.fs"));
@@ -54,10 +48,10 @@ void NBody::onInit(int width, int height, int argc, char** argv)
 	this->setZoom();
 	this->useStandardShader();
 
-	glViewport(0, 0, width, height);
+	HANDLE_GL_ERROR(glViewport(0, 0, width, height));
 
-	glBindVertexArray(m_vao);
-	glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
+	HANDLE_GL_ERROR(glBindVertexArray(m_vao));
+	HANDLE_GL_ERROR(glEnable(GL_VERTEX_PROGRAM_POINT_SIZE));
 
 	this->reset();
 
@@ -70,7 +64,7 @@ inline float random()
 
 void NBody::reset()
 {
-	glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
+	HANDLE_GL_ERROR(glBindBuffer(GL_ARRAY_BUFFER, m_vbo));
 
 	// initialize buffer object
 	Body array[N];
@@ -88,13 +82,13 @@ void NBody::reset()
 		array[i].mass = random() * random() * random() * 10.0 + 1.0;
 	}
 	
-	glBufferData(GL_ARRAY_BUFFER, sizeof(Body) * N, array, GL_DYNAMIC_DRAW);
+	HANDLE_GL_ERROR(glBufferData(GL_ARRAY_BUFFER, sizeof(Body) * N, array, GL_DYNAMIC_DRAW));
 
 }
 
 void NBody::onResize(int width, int height)
 {
-	glViewport(0, 0, width, height);
+	HANDLE_GL_ERROR(glViewport(0, 0, width, height));
 }
 
 void NBody::onLoop()
@@ -104,8 +98,8 @@ void NBody::onLoop()
 	{
 		this->simulate(this->getFrameTime());
 	}
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glDrawArrays(GL_POINTS, 0, N);
+	HANDLE_GL_ERROR(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
+	HANDLE_GL_ERROR(glDrawArrays(GL_POINTS, 0, N));
 
 }
 
@@ -157,13 +151,13 @@ void NBody::setZoom()
 {
 	float viewMatrix[16] = { 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, m_zoom };
 
-	glUseProgram(m_shader->getProgramID());
-	glUniformMatrix4fv(glGetUniformLocation(m_shader->getProgramID(), "view"), 1, false, viewMatrix);
-	glUseProgram(0);
+	HANDLE_GL_ERROR(glUseProgram(m_shader->getProgramID()));
+	HANDLE_GL_ERROR(glUniformMatrix4fv(glGetUniformLocation(m_shader->getProgramID(), "view"), 1, false, viewMatrix));
+	HANDLE_GL_ERROR(glUseProgram(0));
 
-	glUseProgram(m_quickDrawShader->getProgramID());
-	glUniformMatrix4fv(glGetUniformLocation(m_quickDrawShader->getProgramID(), "view"), 1, false, viewMatrix);
-	glUseProgram(0);
+	HANDLE_GL_ERROR(glUseProgram(m_quickDrawShader->getProgramID()));
+	HANDLE_GL_ERROR(glUniformMatrix4fv(glGetUniformLocation(m_quickDrawShader->getProgramID(), "view"), 1, false, viewMatrix));
+	HANDLE_GL_ERROR(glUseProgram(0));
 
 	if (this->m_quickDraw) this->useQuickDrawShader();
 	else this->useStandardShader();

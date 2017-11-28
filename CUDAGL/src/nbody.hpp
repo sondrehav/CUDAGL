@@ -20,7 +20,7 @@ struct Body
 	float mass;
 };
 
-class NBody : public Program
+class NBody : public program::Program
 {
 
 public:

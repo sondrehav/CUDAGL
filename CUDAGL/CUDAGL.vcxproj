@@ -182,6 +182,7 @@
     <CudaCompile Include="src\nbody.cu" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\error_check.h" />
     <ClInclude Include="src\file.h" />
     <ClInclude Include="src\nbody.hpp" />
     <ClInclude Include="src\program.hpp" />

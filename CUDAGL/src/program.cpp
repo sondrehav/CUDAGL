@@ -1,4 +1,3 @@
-
 #include <GLEW/glew.h>
 
 #include "program.hpp"
@@ -6,6 +5,9 @@
 #include <cuda_gl_interop.h>
 #include <helper_cuda.h>
 #include <cassert>
+#include "error_check.h"
+
+namespace program {
 
 GLFWwindow* Program::s_window = NULL;
 Program* Program::s_active = NULL;
@@ -53,17 +55,22 @@ bool Program::initializeGLFW()
 {
 	GLFWwindow* window;
 
+	int errorCode;
 	/* Initialize the library */
-	if (glfwInit() != GLFW_TRUE)
+	if ((errorCode = glfwInit()) != GLFW_TRUE)
+	{
+		printf("GLFW failed to initialize. Error code: %d\n", errorCode);
+		__debugbreak();
 		return false;
-
-
+	}
 
 	/* Create a windowed mode window and its OpenGL context */
 	window = glfwCreateWindow(WIDTH, HEIGHT, "Hello World", NULL, NULL);
 	if (!window)
 	{
 		glfwTerminate();
+		printf("GLFW failed to create window.\n");
+		__debugbreak();
 		return false;
 	}
 
@@ -71,10 +78,11 @@ bool Program::initializeGLFW()
 	glfwMakeContextCurrent(window);
 
 	/* Initialize GLEW */
-	if(glewInit() != GLEW_OK)
+	if((errorCode = glewInit()) != GLEW_OK)
 	{
-		printf("GLEW init error\n");
+		printf("GLEW init error. Error code: %d\n", errorCode);
 		glfwTerminate();
+		__debugbreak();
 		return false;
 	}
 
@@ -88,7 +96,7 @@ bool Program::initializeGLFW()
 
 	//cudaGLSetGLDevice
 	int devID = findCudaDevice();
-	assert(cudaGLSetGLDevice(devID) == cudaSuccess);
+	HANDLE_CUDA_ERROR(cudaGLSetGLDevice(devID));
 
 	s_window = window;
 	
@@ -105,3 +113,5 @@ void Program::s_onResize(GLFWwindow* window, int width, int height) { s_active->
 void Program::s_onKey(GLFWwindow* window, int key, int scancode, int action, int mods) { s_active->onKey(key, scancode, action, mods); }
 void Program::s_onMouseMove(GLFWwindow* window, double xpos, double ypos) { s_active->onMouseMove(xpos, ypos); }
 void Program::s_onMouseButton(GLFWwindow* window, int button, int action, int mods) { s_active->onMouseButton(button, action, mods); }
+
+}

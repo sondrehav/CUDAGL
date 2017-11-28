@@ -2,19 +2,12 @@
 #include "cuda_runtime.h"
 #include "helper_cuda.h"
 #include "device_launch_parameters.h"
+#include "error_check.h"
 
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-
-#define HANDLE_ERROR(x) \
-	if(x != cudaSuccess) {\
-		fprintf(stderr, "CUDA failed at line %d in file %s!\n", __LINE__, __FILE__);\
-		fprintf(stderr, "Error: '%d\n'", _cudaGetErrorEnum(x));\
-		system("pause"); \
-		exit(-1);\
-	}\
 
 __global__ void collision(Body *pnt, double deltaTime)
 {
@@ -149,19 +142,19 @@ void NBody::simulate(double deltaTime)
 	Body* devPtr;
 	size_t size;
 
-	HANDLE_ERROR(cudaGraphicsMapResources(1, &m_cudaVBOResource, NULL));
-	HANDLE_ERROR(cudaGraphicsResourceGetMappedPointer((void**)&devPtr, &size, m_cudaVBOResource));
+	HANDLE_CUDA_ERROR(cudaGraphicsMapResources(1, &m_cudaVBOResource, NULL));
+	HANDLE_CUDA_ERROR(cudaGraphicsResourceGetMappedPointer((void**)&devPtr, &size, m_cudaVBOResource));
 
 	collision<<<BLOCK_SIZE, THREAD_SIZE >>>(devPtr, deltaTime);
-	cudaDeviceSynchronize();
+	HANDLE_CUDA_ERROR(cudaDeviceSynchronize());
 	
 	gravity<<<BLOCK_SIZE, THREAD_SIZE>>>(devPtr, deltaTime);
-	cudaDeviceSynchronize();
+	HANDLE_CUDA_ERROR(cudaDeviceSynchronize());
 
 	updatePosition<<<BLOCK_SIZE, THREAD_SIZE >>>(devPtr, deltaTime);
-	cudaDeviceSynchronize();
+	HANDLE_CUDA_ERROR(cudaDeviceSynchronize());
 	
-	HANDLE_ERROR(cudaGraphicsUnmapResources(1, &m_cudaVBOResource, NULL));
+	HANDLE_CUDA_ERROR(cudaGraphicsUnmapResources(1, &m_cudaVBOResource, NULL));
 
 	
 }

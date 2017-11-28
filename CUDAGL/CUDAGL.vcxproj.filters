@@ -10,6 +10,7 @@
     <ClInclude Include="src\shader.h" />
     <ClInclude Include="src\file.h" />
     <ClInclude Include="src\nbody.hpp" />
+    <ClInclude Include="src\error_check.h" />
   </ItemGroup>
   <ItemGroup>
     <CudaCompile Include="src\nbody.cu" />
